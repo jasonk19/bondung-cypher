@@ -13,6 +13,7 @@ Rails.application.routes.draw do
       resources :playfair, only: [:create]
       resources :vigenere, only: [:create]
       resources :affine, only: [:create]
+      resources :extended_vigenere, only: [:create], path: 'extended-vigenere'
     end
   end
 end
