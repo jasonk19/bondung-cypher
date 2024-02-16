@@ -14,8 +14,9 @@ import {
 } from "@chakra-ui/react";
 import { FaLock, FaLockOpen } from "react-icons/fa";
 import { MdFileDownload } from "react-icons/md";
+import { HiOutlineXMark } from "react-icons/hi2";
 import Layout from "../components/Layout";
-import { BaseSyntheticEvent, useEffect, useState } from "react";
+import { BaseSyntheticEvent, useRef, useState } from "react";
 import axios, { AxiosError } from "axios";
 
 export default function Playfair() {
@@ -30,6 +31,11 @@ export default function Playfair() {
   const [cipherText, setCipherText] = useState("");
   const [result, setResult] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [plainTextFile, setPlainTextFile] = useState<File>();
+  const [cipherTextFile, setCipherTextFile] = useState<File>();
+
+  const plainTextFileRef = useRef<HTMLInputElement>(null);
+  const cipherTextFileRef = useRef<HTMLInputElement>(null);
 
   const handleGridChange = (
     event: BaseSyntheticEvent,
@@ -96,17 +102,30 @@ export default function Playfair() {
   const executeEncrypt = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/cipher/playfair",
-        {
-          matrix: grid,
-          mode: "encrypt",
-          text: plainText
-        }
-      );
+      if (plainTextFile !== undefined) {
+        const data = new FormData();
+        data.append("matrix", JSON.stringify(grid));
+        data.append("mode", "encrypt");
+        data.append("file", plainTextFile, plainTextFile.name);
 
-      setResult(response.data.result);
-      setIsLoading(false);
+        const response = await axios.post(
+          "http://localhost:3000/api/cipher/playfair",
+          data
+        );
+        setResult(response.data.result);
+        setIsLoading(false);
+      } else {
+        const response = await axios.post(
+          "http://localhost:3000/api/cipher/playfair",
+          {
+            matrix: grid,
+            mode: "encrypt",
+            text: plainText
+          }
+        );
+        setResult(response.data.result);
+        setIsLoading(false);
+      }
     } catch (error) {
       if (error instanceof AxiosError) {
         toast({
@@ -123,17 +142,30 @@ export default function Playfair() {
   const executeDecrypt = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/cipher/playfair",
-        {
-          matrix: grid,
-          mode: "decrypt",
-          text: cipherText
-        }
-      );
+      if (cipherTextFile !== undefined) {
+        const data = new FormData();
+        data.append("matrix", JSON.stringify(grid));
+        data.append("mode", "decrypt");
+        data.append("file", cipherTextFile, cipherTextFile.name);
 
-      setResult(response.data.result);
-      setIsLoading(false);
+        const response = await axios.post(
+          "http://localhost:3000/api/cipher/playfair",
+          data
+        );
+        setResult(response.data.result);
+        setIsLoading(false);
+      } else {
+        const response = await axios.post(
+          "http://localhost:3000/api/cipher/playfair",
+          {
+            matrix: grid,
+            mode: "decrypt",
+            text: cipherText
+          }
+        );
+        setResult(response.data.result);
+        setIsLoading(false);
+      }
     } catch (error) {
       if (error instanceof AxiosError) {
         toast({
@@ -158,6 +190,20 @@ export default function Playfair() {
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
+  };
+
+  const deletePlainTextFile = () => {
+    if (plainTextFileRef.current) {
+      plainTextFileRef.current.value = "";
+      setPlainTextFile(undefined);
+    }
+  };
+
+  const deleteCipherTextFile = () => {
+    if (cipherTextFileRef.current) {
+      cipherTextFileRef.current.value = "";
+      setCipherTextFile(undefined);
+    }
   };
 
   return (
@@ -222,6 +268,23 @@ export default function Playfair() {
                 placeholder="Plain text"
                 rows={5}
               />
+              <HStack justifyContent={"space-between"}>
+                <Input
+                  ref={plainTextFileRef}
+                  w={"80%"}
+                  type="file"
+                  variant={"unstyled"}
+                  onChange={(event) => setPlainTextFile(event.target.files![0])}
+                />
+                {plainTextFile !== undefined && (
+                  <Icon
+                    as={HiOutlineXMark}
+                    boxSize={6}
+                    cursor={"pointer"}
+                    onClick={deletePlainTextFile}
+                  />
+                )}
+              </HStack>
               <Button
                 w={"full"}
                 onClick={executeEncrypt}
@@ -230,7 +293,11 @@ export default function Playfair() {
               >
                 <HStack>
                   <Icon as={FaLock} />
-                  <Text>Encrypt</Text>
+                  <Text>
+                    {plainTextFile !== undefined
+                      ? "Encrypt file content"
+                      : "Encrypt"}
+                  </Text>
                 </HStack>
               </Button>
             </Stack>
@@ -243,6 +310,25 @@ export default function Playfair() {
                 placeholder="Cipher text"
                 rows={5}
               />
+              <HStack justifyContent={"space-between"}>
+                <Input
+                  ref={cipherTextFileRef}
+                  w={"80%"}
+                  type="file"
+                  variant={"unstyled"}
+                  onChange={(event) =>
+                    setCipherTextFile(event.target.files![0])
+                  }
+                />
+                {cipherTextFile !== undefined && (
+                  <Icon
+                    as={HiOutlineXMark}
+                    boxSize={6}
+                    cursor={"pointer"}
+                    onClick={deleteCipherTextFile}
+                  />
+                )}
+              </HStack>
               <Button
                 w={"full"}
                 onClick={executeDecrypt}
@@ -251,7 +337,11 @@ export default function Playfair() {
               >
                 <HStack>
                   <Icon as={FaLockOpen} />
-                  <Text>Decrypt</Text>
+                  <Text>
+                    {cipherTextFile !== undefined
+                      ? "Decrypt file content"
+                      : "Decrypt"}
+                  </Text>
                 </HStack>
               </Button>
             </Stack>

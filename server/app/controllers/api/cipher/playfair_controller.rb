@@ -1,13 +1,15 @@
 require "matrix"
+require "json"
 
 class Api::Cipher::PlayfairController < ApplicationController
   before_action :create_matrix
   def create
-    unless params[:mode] == "encrypt" or params[:mode] == "decrypt"
+    unless params[:mode] == "encrypt" || params[:mode] == "decrypt"
       render json: { message: "Invalid mode" }, status: :unprocessable_entity
     end
 
-    pairs = prepare_text
+    text_content = extract_text_content
+    pairs = prepare_text(text_content)
 
     if params[:mode] == "encrypt"
       encrypted_text = encrypt(pairs)
@@ -21,7 +23,11 @@ class Api::Cipher::PlayfairController < ApplicationController
   private
 
   def create_matrix
-    matrix_params = params[:matrix]
+    matrix_params = if params[:file].present?
+      JSON.parse(params[:matrix])
+    else
+      params[:matrix]
+    end
 
     @matrix = Matrix[*matrix_params]
 
@@ -32,9 +38,17 @@ class Api::Cipher::PlayfairController < ApplicationController
     end
   end
 
-  def prepare_text
+  def extract_text_content
+    if params[:file].present?
+      File.read(params[:file].tempfile)
+    else
+      params[:text]
+    end
+  end
+
+  def prepare_text(text)
     if params[:mode] == "encrypt"
-      upper_case = params[:text].upcase
+      upper_case = text.upcase
       no_j_text = upper_case.gsub('J', 'I')
       no_numbers_text = no_j_text.gsub(/[^a-zA-Z]/, '')
 
@@ -64,7 +78,7 @@ class Api::Cipher::PlayfairController < ApplicationController
 
       no_duplicate_text.chars.each_slice(2).map(&:join)
     else
-      upper_case = params[:text].upcase
+      upper_case = text.upcase
       upper_case.chars.each_slice(2).map(&:join)
     end
   end
