@@ -5,7 +5,13 @@ const defaultButton: SystemStyleFunction = () => {
     color: "white",
     bg: "navbar",
     _hover: {
-      bg: "#485C75"
+      bg: "#485C75",
+      _disabled: {
+        bg: "#2B323A"
+      }
+    },
+    _disabled: {
+      bg: "#2B323A"
     }
   };
 };

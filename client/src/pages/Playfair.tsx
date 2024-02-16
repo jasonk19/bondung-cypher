@@ -6,14 +6,14 @@ import {
   Heading,
   Icon,
   Input,
-  Select,
   Stack,
   Text,
   Textarea,
   VStack,
   useToast
 } from "@chakra-ui/react";
-import { FaArrowUp, FaArrowDown, FaLock, FaLockOpen } from "react-icons/fa";
+import { FaLock, FaLockOpen } from "react-icons/fa";
+import { MdFileDownload } from "react-icons/md";
 import Layout from "../components/Layout";
 import { BaseSyntheticEvent, useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
@@ -26,7 +26,6 @@ export default function Playfair() {
       .map(() => Array(5).fill(""))
   );
   const [key, setKey] = useState("");
-  const [mode, setMode] = useState("encrypt");
   const [plainText, setPlainText] = useState("");
   const [cipherText, setCipherText] = useState("");
   const [result, setResult] = useState("");
@@ -111,8 +110,10 @@ export default function Playfair() {
     } catch (error) {
       if (error instanceof AxiosError) {
         toast({
+          title: "Encryption error",
           status: "error",
-          description: error.response?.data.message
+          description: error.response?.data.message,
+          position: "top-right"
         });
       }
       setIsLoading(false);
@@ -136,17 +137,29 @@ export default function Playfair() {
     } catch (error) {
       if (error instanceof AxiosError) {
         toast({
+          title: "Decryption error",
           status: "error",
-          description: error.response?.data.message
+          description: error.response?.data.message,
+          position: "top-right"
         });
       }
       setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    console.log(grid);
-  }, [grid]);
+  const download = () => {
+    const element = document.createElement("a");
+    element.setAttribute(
+      "href",
+      "data:text/plain;charset=utf-8," + encodeURIComponent(result)
+    );
+    element.setAttribute("download", "result.txt");
+    element.style.display = "none";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+
   return (
     <Layout>
       <HStack py={8} px={32} align={"center"} justifyContent={"space-around"}>
@@ -244,9 +257,20 @@ export default function Playfair() {
             </Stack>
           </HStack>
           <Stack placeSelf={"start"} w={"full"}>
-            <Heading w={"full"} borderBottom={"1px solid black"} py={2}>
-              Result
-            </Heading>
+            <HStack
+              borderBottom={"1px solid black"}
+              py={2}
+              w={"full"}
+              justifyContent={"space-between"}
+            >
+              <Heading fontSize={"x-large"}>Result</Heading>
+              <Button onClick={download} isDisabled={result.length === 0}>
+                <HStack>
+                  <Icon as={MdFileDownload} boxSize={6} />
+                  <Text>Download as txt</Text>
+                </HStack>
+              </Button>
+            </HStack>
             <Text>{result}</Text>
           </Stack>
         </VStack>
