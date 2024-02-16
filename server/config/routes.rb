@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     namespace :cipher do
       resources :playfair, only: [:create]
       resources :vigenere, only: [:create]
+      resources :affine, only: [:create]
     end
   end
 end
