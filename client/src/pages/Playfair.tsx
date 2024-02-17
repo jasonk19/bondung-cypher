@@ -1,5 +1,8 @@
 import {
+  AbsoluteCenter,
+  Box,
   Button,
+  Divider,
   Grid,
   GridItem,
   HStack,
@@ -14,10 +17,10 @@ import {
 } from "@chakra-ui/react";
 import { FaLock, FaLockOpen } from "react-icons/fa";
 import { MdFileDownload } from "react-icons/md";
-import { HiOutlineXMark } from "react-icons/hi2";
 import Layout from "../components/Layout";
-import { BaseSyntheticEvent, useRef, useState } from "react";
+import { BaseSyntheticEvent, useState } from "react";
 import axios, { AxiosError } from "axios";
+import CustomFileInput from "../components/CustomFileInput";
 
 export default function Playfair() {
   const toast = useToast();
@@ -33,9 +36,6 @@ export default function Playfair() {
   const [isLoading, setIsLoading] = useState(false);
   const [plainTextFile, setPlainTextFile] = useState<File>();
   const [cipherTextFile, setCipherTextFile] = useState<File>();
-
-  const plainTextFileRef = useRef<HTMLInputElement>(null);
-  const cipherTextFileRef = useRef<HTMLInputElement>(null);
 
   const handleGridChange = (
     event: BaseSyntheticEvent,
@@ -192,18 +192,12 @@ export default function Playfair() {
     document.body.removeChild(element);
   };
 
-  const deletePlainTextFile = () => {
-    if (plainTextFileRef.current) {
-      plainTextFileRef.current.value = "";
-      setPlainTextFile(undefined);
-    }
+  const handlePlainTextFileChange = (file: File | undefined) => {
+    setPlainTextFile(file);
   };
 
-  const deleteCipherTextFile = () => {
-    if (cipherTextFileRef.current) {
-      cipherTextFileRef.current.value = "";
-      setCipherTextFile(undefined);
-    }
+  const handleCipherTextFileChange = (file: File | undefined) => {
+    setCipherTextFile(file);
   };
 
   return (
@@ -260,7 +254,7 @@ export default function Playfair() {
         <VStack w={"60%"} align={"center"} justifyContent={"center"} gap={8}>
           <HStack w={"full"} gap={8}>
             <Stack w={"full"}>
-              <Text>Playfair Plain Text</Text>
+              <Text>Playfair plain text</Text>
               <Textarea
                 value={plainText}
                 onChange={(event) => setPlainText(event.target.value)}
@@ -268,23 +262,13 @@ export default function Playfair() {
                 placeholder="Plain text"
                 rows={5}
               />
-              <HStack justifyContent={"space-between"}>
-                <Input
-                  ref={plainTextFileRef}
-                  w={"80%"}
-                  type="file"
-                  variant={"unstyled"}
-                  onChange={(event) => setPlainTextFile(event.target.files![0])}
-                />
-                {plainTextFile !== undefined && (
-                  <Icon
-                    as={HiOutlineXMark}
-                    boxSize={6}
-                    cursor={"pointer"}
-                    onClick={deletePlainTextFile}
-                  />
-                )}
-              </HStack>
+              <Box position="relative" p={4}>
+                <Divider border={"1px solid black"} />
+                <AbsoluteCenter bg={"main"} px="4">
+                  or
+                </AbsoluteCenter>
+              </Box>
+              <CustomFileInput onFileChange={handlePlainTextFileChange} />
               <Button
                 w={"full"}
                 onClick={executeEncrypt}
@@ -302,7 +286,7 @@ export default function Playfair() {
               </Button>
             </Stack>
             <Stack w={"full"}>
-              <Text>Playfair Cipher Text</Text>
+              <Text>Playfair ciphertext</Text>
               <Textarea
                 value={cipherText}
                 onChange={(event) => setCipherText(event.target.value)}
@@ -310,25 +294,13 @@ export default function Playfair() {
                 placeholder="Cipher text"
                 rows={5}
               />
-              <HStack justifyContent={"space-between"}>
-                <Input
-                  ref={cipherTextFileRef}
-                  w={"80%"}
-                  type="file"
-                  variant={"unstyled"}
-                  onChange={(event) =>
-                    setCipherTextFile(event.target.files![0])
-                  }
-                />
-                {cipherTextFile !== undefined && (
-                  <Icon
-                    as={HiOutlineXMark}
-                    boxSize={6}
-                    cursor={"pointer"}
-                    onClick={deleteCipherTextFile}
-                  />
-                )}
-              </HStack>
+              <Box position="relative" p={4}>
+                <Divider border={"1px solid black"} />
+                <AbsoluteCenter bg={"main"} px="4">
+                  or
+                </AbsoluteCenter>
+              </Box>
+              <CustomFileInput onFileChange={handleCipherTextFileChange} />
               <Button
                 w={"full"}
                 onClick={executeDecrypt}
@@ -361,7 +333,13 @@ export default function Playfair() {
                 </HStack>
               </Button>
             </HStack>
-            <Text>{result}</Text>
+            {result.length > 0 ? (
+              <Text>{result}</Text>
+            ) : (
+              <Text color={"gray"} fontStyle={"italic"}>
+                Results will be displayed here
+              </Text>
+            )}
           </Stack>
         </VStack>
       </HStack>
