@@ -147,7 +147,7 @@ export default function Vigenere() {
     <Layout>
       <HStack py={8} px={32} justifyContent={"space-around"} align={"start"} gap="8">
         <Stack spacing={3} width={"50%"}>
-          <Heading color="navbar" size="md">Vigenere Cipher</Heading>
+          <Heading color="navbar" size="md">Vigen&eacute;re Cipher</Heading>
           <Divider border={"1px solid black"} />
           <Stack>
             <FormControl>

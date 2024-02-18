@@ -3,6 +3,8 @@ import {
   Box,
   Button,
   Divider,
+  FormControl,
+  FormLabel,
   Grid,
   GridItem,
   HStack,
@@ -12,7 +14,6 @@ import {
   Stack,
   Text,
   Textarea,
-  VStack,
   useToast
 } from "@chakra-ui/react";
 import { FaLock, FaLockOpen } from "react-icons/fa";
@@ -202,9 +203,18 @@ export default function Playfair() {
 
   return (
     <Layout>
-      <HStack py={8} px={32} align={"center"} justifyContent={"space-around"}>
-        <Stack gap={8}>
-          <Text>Playfair Grid (Without J)</Text>
+      <HStack
+        py={8}
+        px={32}
+        align={"start"}
+        justifyContent={"space-around"}
+        gap={8}
+      >
+        <Stack spacing={3} w={"50%"}>
+          <Heading color="navbar" size="md">
+            Playfair Cipher Grid
+          </Heading>
+          <Divider border={"1px solid black"} />
           <Grid
             templateColumns={"repeat(5, 1fr)"}
             templateRows={"repeat(5, 1fr)"}
@@ -240,26 +250,29 @@ export default function Playfair() {
             </Button>
           </HStack>
           <Stack>
-            <Text>Custom key</Text>
-            <HStack>
+            <FormControl>
+              <FormLabel>Custom Key</FormLabel>
               <Input
-                placeholder="Enter key here"
+                placeholder="Insert custom key here"
                 value={key}
                 onChange={(event) => setKey(event.target.value)}
               />
-              <Button onClick={populateGridWithKey}>Set Key</Button>
-            </HStack>
+            </FormControl>
+            <Button onClick={populateGridWithKey}>Set Key</Button>
           </Stack>
         </Stack>
-        <VStack w={"60%"} align={"center"} justifyContent={"center"} gap={8}>
+        <Stack w={"full"} spacing={3}>
           <HStack w={"full"} gap={8}>
-            <Stack w={"full"}>
-              <Text>Playfair plain text</Text>
+            <Stack spacing={3} w={"full"}>
+              <Heading color="navbar" size="md">
+                Plaintext
+              </Heading>
+              <Divider border={"1px solid black"} />
               <Textarea
                 value={plainText}
                 onChange={(event) => setPlainText(event.target.value)}
                 resize={"none"}
-                placeholder="Plain text"
+                placeholder="Insert plain text here"
                 rows={5}
               />
               <Box position="relative" p={4}>
@@ -273,7 +286,13 @@ export default function Playfair() {
                 w={"full"}
                 onClick={executeEncrypt}
                 isLoading={isLoading}
-                isDisabled={isLoading}
+                isDisabled={
+                  isLoading ||
+                  !grid.every((row) =>
+                    row.every((element) => element !== "")
+                  ) ||
+                  (!plainTextFile && plainText.length === 0)
+                }
               >
                 <HStack>
                   <Icon as={FaLock} />
@@ -285,13 +304,16 @@ export default function Playfair() {
                 </HStack>
               </Button>
             </Stack>
-            <Stack w={"full"}>
-              <Text>Playfair ciphertext</Text>
+            <Stack spacing={3} w={"full"}>
+              <Heading color="navbar" size="md">
+                Ciphertext
+              </Heading>
+              <Divider border={"1px solid black"} />
               <Textarea
                 value={cipherText}
                 onChange={(event) => setCipherText(event.target.value)}
                 resize={"none"}
-                placeholder="Cipher text"
+                placeholder="Insert cipher text here"
                 rows={5}
               />
               <Box position="relative" p={4}>
@@ -305,7 +327,13 @@ export default function Playfair() {
                 w={"full"}
                 onClick={executeDecrypt}
                 isLoading={isLoading}
-                isDisabled={isLoading}
+                isDisabled={
+                  isLoading ||
+                  !grid.every((row) =>
+                    row.every((element) => element !== "")
+                  ) ||
+                  (!cipherTextFile && cipherText.length === 0)
+                }
               >
                 <HStack>
                   <Icon as={FaLockOpen} />
@@ -341,7 +369,7 @@ export default function Playfair() {
               </Text>
             )}
           </Stack>
-        </VStack>
+        </Stack>
       </HStack>
     </Layout>
   );

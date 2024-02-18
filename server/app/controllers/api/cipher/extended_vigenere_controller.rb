@@ -125,8 +125,6 @@ class Api::Cipher::ExtendedVigenereController < ApplicationController
       encrypted_bytes.append(encrypted_byte)
     end
 
-    puts encrypted_bytes[0]
-
     encrypted_bytes
   end
 
@@ -142,8 +140,6 @@ class Api::Cipher::ExtendedVigenereController < ApplicationController
 
       decrypted_bytes.append(decrypted_byte)
     end
-
-    puts decrypted_bytes[0], "AFTER DECRYPT"
 
     decrypted_bytes
   end

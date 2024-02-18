@@ -37,13 +37,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     },
     {
       icon: RiKey2Fill,
-      name: "Vigenere Cipher",
+      name: `Vigen\u00E9re Cipher`,
       path: "/vigenere",
       active: location.pathname === "/vigenere"
     },
     {
       icon: ImKey,
-      name: "Extended Vigenere Cipher",
+      name: "Extended Vigen\u00E9re Cipher",
       path: "/extended-vigenere",
       active: location.pathname === "/extended-vigenere"
     },

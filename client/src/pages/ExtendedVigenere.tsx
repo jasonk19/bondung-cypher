@@ -3,6 +3,8 @@ import {
   Box,
   Button,
   Divider,
+  FormControl,
+  FormLabel,
   HStack,
   Heading,
   Icon,
@@ -10,7 +12,6 @@ import {
   Stack,
   Text,
   Textarea,
-  VStack,
   useToast
 } from "@chakra-ui/react";
 import { FaLock, FaLockOpen } from "react-icons/fa";
@@ -185,113 +186,133 @@ export default function ExtendedVigenere() {
 
   return (
     <Layout>
-      <VStack
-        w={"full"}
+      <HStack
         py={8}
         px={32}
-        align={"center"}
+        align={"start"}
         justifyContent={"space-around"}
         gap={8}
       >
-        <HStack w={"50%"} justifyContent={"center"}>
-          <Text>Cipher key</Text>
-          <Input
-            w={"60%"}
-            placeholder="Insert cipher key here"
-            value={key}
-            onChange={(event) => setKey(event.target.value)}
-          />
-        </HStack>
-        <HStack w={"80%"} gap={8}>
-          <Stack w={"full"}>
-            <Text>Extended Vigenere plain text</Text>
-            <Textarea
-              value={plainText}
-              onChange={(event) => setPlainText(event.target.value)}
-              resize={"none"}
-              placeholder="Plain text"
-              rows={5}
+        <Stack spacing={3} w={"50%"}>
+          <Heading color="navbar" size="md">
+            Extended Vigen&eacute;re Cipher
+          </Heading>
+          <Divider border={"1px solid black"} />
+          <FormControl>
+            <FormLabel>Cipher key</FormLabel>
+            <Input
+              value={key}
+              onChange={(event) => setKey(event.target.value)}
+              placeholder="Insert cipher key here"
             />
-            <Box position="relative" p={4}>
-              <Divider border={"1px solid black"} />
-              <AbsoluteCenter bg={"main"} px="4">
-                or
-              </AbsoluteCenter>
-            </Box>
-            <CustomFileInput onFileChange={handlePlainTextFileChange} />
-            <Button
-              w={"full"}
-              onClick={executeEncrypt}
-              isLoading={isLoading}
-              isDisabled={isLoading}
-            >
-              <HStack>
-                <Icon as={FaLock} />
-                <Text>
-                  {plainTextFile !== undefined
-                    ? "Encrypt file content"
-                    : "Encrypt"}
-                </Text>
-              </HStack>
-            </Button>
-          </Stack>
-          <Stack w={"full"}>
-            <Text>Extended Vigenere ciphertext</Text>
-            <Textarea
-              value={cipherText}
-              onChange={(event) => setCipherText(event.target.value)}
-              resize={"none"}
-              placeholder="Cipher text"
-              rows={5}
-            />
-            <Box position="relative" p={4}>
-              <Divider border={"1px solid black"} />
-              <AbsoluteCenter bg={"main"} px="4">
-                or
-              </AbsoluteCenter>
-            </Box>
-            <CustomFileInput onFileChange={handleCipherTextFileChange} />
-            <Button
-              w={"full"}
-              onClick={executeDecrypt}
-              isLoading={isLoading}
-              isDisabled={isLoading}
-            >
-              <HStack>
-                <Icon as={FaLockOpen} />
-                <Text>
-                  {cipherTextFile !== undefined
-                    ? "Decrypt file content"
-                    : "Decrypt"}
-                </Text>
-              </HStack>
-            </Button>
-          </Stack>
-        </HStack>
-        <Stack placeSelf={"start"} w={"full"}>
-          <HStack
-            borderBottom={"1px solid black"}
-            py={2}
-            w={"full"}
-            justifyContent={"space-between"}
-          >
-            <Heading fontSize={"x-large"}>Result</Heading>
-            <Button onClick={download} isDisabled={result.length === 0}>
-              <HStack>
-                <Icon as={MdFileDownload} boxSize={6} />
-                <Text>Download as txt</Text>
-              </HStack>
-            </Button>
-          </HStack>
-          {result.length > 0 ? (
-            <Text>{result}</Text>
-          ) : (
-            <Text color={"gray"} fontStyle={"italic"}>
-              Results will be displayed here
-            </Text>
-          )}
+          </FormControl>
         </Stack>
-      </VStack>
+        <Stack w={"full"} spacing={3}>
+          <HStack w={"full"} gap={8}>
+            <Stack spacing={3} w={"full"}>
+              <Heading color="navbar" size="md">
+                Plaintext
+              </Heading>
+              <Divider border={"1px solid black"} />
+              <Textarea
+                value={plainText}
+                onChange={(event) => setPlainText(event.target.value)}
+                resize={"none"}
+                placeholder="Insert plain text here"
+                rows={5}
+              />
+              <Box position="relative" p={4}>
+                <Divider border={"1px solid black"} />
+                <AbsoluteCenter bg={"main"} px="4">
+                  or
+                </AbsoluteCenter>
+              </Box>
+              <CustomFileInput onFileChange={handlePlainTextFileChange} />
+              <Button
+                w={"full"}
+                onClick={executeEncrypt}
+                isLoading={isLoading}
+                isDisabled={
+                  isLoading ||
+                  key.length === 0 ||
+                  (!plainTextFile && plainText.length === 0)
+                }
+              >
+                <HStack>
+                  <Icon as={FaLock} />
+                  <Text>
+                    {plainTextFile !== undefined
+                      ? "Encrypt file content"
+                      : "Encrypt"}
+                  </Text>
+                </HStack>
+              </Button>
+            </Stack>
+            <Stack spacing={3} w={"full"}>
+              <Heading color="navbar" size="md">
+                Ciphertext
+              </Heading>
+              <Divider border={"1px solid black"} />
+              <Textarea
+                value={cipherText}
+                onChange={(event) => setCipherText(event.target.value)}
+                resize={"none"}
+                placeholder="Insert cipher text here"
+                rows={5}
+              />
+              <Box position="relative" p={4}>
+                <Divider border={"1px solid black"} />
+                <AbsoluteCenter bg={"main"} px="4">
+                  or
+                </AbsoluteCenter>
+              </Box>
+              <CustomFileInput onFileChange={handleCipherTextFileChange} />
+              <Button
+                w={"full"}
+                onClick={executeDecrypt}
+                isLoading={isLoading}
+                isDisabled={
+                  isLoading ||
+                  key.length === 0 ||
+                  (!cipherTextFile && cipherText.length === 0)
+                }
+              >
+                <HStack>
+                  <Icon as={FaLockOpen} />
+                  <Text>
+                    {cipherTextFile !== undefined
+                      ? "Decrypt file content"
+                      : "Decrypt"}
+                  </Text>
+                </HStack>
+              </Button>
+            </Stack>
+          </HStack>
+          <Stack placeSelf={"start"} w={"full"}>
+            <HStack
+              borderBottom={"1px solid black"}
+              py={2}
+              w={"full"}
+              justifyContent={"space-between"}
+            >
+              <Heading fontSize={"x-large"}>Result</Heading>
+              <Button onClick={download} isDisabled={result.length === 0}>
+                <HStack>
+                  <Icon as={MdFileDownload} boxSize={6} />
+                  <Text>Download as txt</Text>
+                </HStack>
+              </Button>
+            </HStack>
+            {result.length > 0 ? (
+              <Text>{result}</Text>
+            ) : (
+              <Text color={"gray"} fontStyle={"italic"}>
+                Results will be displayed here
+              </Text>
+            )}
+          </Stack>
+        </Stack>
+      </HStack>
     </Layout>
   );
 }
