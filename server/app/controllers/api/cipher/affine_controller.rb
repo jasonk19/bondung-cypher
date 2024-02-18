@@ -43,7 +43,7 @@ class Api::Cipher::AffineController < ApplicationController
       ciphertext << cipher_char_ascii
     end
   
-    return ciphertext
+    return ciphertext.upcase
   end
 
   def find_inverse(m)
@@ -61,7 +61,7 @@ class Api::Cipher::AffineController < ApplicationController
     plaintext = ""
 
     inverse_slope = find_inverse(slope)
-    
+
     ciphertext.each_char do |c|
       cipher_char_ascii = c.ord
   
@@ -88,7 +88,7 @@ class Api::Cipher::AffineController < ApplicationController
       plaintext << plain_char_ascii
     end
   
-    return plaintext
+    return plaintext.upcase
   end
 
 end
