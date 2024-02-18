@@ -208,7 +208,7 @@ export default function ExtendedVigenere() {
           </FormControl>
         </Stack>
         <Stack w={"full"} spacing={3}>
-          <HStack w={"full"} gap={8}>
+          <HStack w={"full"} spacing={10}>
             <Stack spacing={3} w={"full"}>
               <Heading color="navbar" size="md">
                 Plaintext
@@ -221,7 +221,7 @@ export default function ExtendedVigenere() {
                 placeholder="Insert plain text here"
                 rows={5}
               />
-              <Box position="relative" p={4}>
+              <Box position="relative" py={2}>
                 <Divider border={"1px solid black"} />
                 <AbsoluteCenter bg={"main"} px="4">
                   or
@@ -260,7 +260,7 @@ export default function ExtendedVigenere() {
                 placeholder="Insert cipher text here"
                 rows={5}
               />
-              <Box position="relative" p={4}>
+              <Box position="relative" py={2}>
                 <Divider border={"1px solid black"} />
                 <AbsoluteCenter bg={"main"} px="4">
                   or

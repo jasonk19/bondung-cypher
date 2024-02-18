@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Drawer,
   DrawerBody,
@@ -10,6 +10,7 @@ import {
   HStack,
   Heading,
   Icon,
+  Image,
   Stack,
   Text,
   useDisclosure
@@ -20,7 +21,6 @@ import { RiKey2Fill } from "react-icons/ri";
 import { PiBracketsCurlyBold } from "react-icons/pi";
 import { ImKey } from "react-icons/im";
 import { TbVectorTriangle } from "react-icons/tb";
-import { MdOutlineLock } from "react-icons/md";
 import { Link, useLocation } from "react-router-dom";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -43,7 +43,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     },
     {
       icon: ImKey,
-      name: "Extended Vigen\u00E9re Cipher",
+      name: "Extended Vigen\u00E9re Cipher & Super Encryption",
       path: "/extended-vigenere",
       active: location.pathname === "/extended-vigenere"
     },
@@ -58,18 +58,39 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       name: "Hill Cipher",
       path: "/hill",
       active: location.pathname === "/hill"
-    },
-    {
-      icon: MdOutlineLock,
-      name: "Super Encryption",
-      path: "/super-encryption",
-      active: location.pathname === "/super-encryption"
     }
   ];
+
+  useEffect(() => {
+    let title = "Bondung Cipher";
+    switch (location.pathname) {
+      case "/affine":
+        title = " Affine Cipher";
+        break;
+      case "/vigenere":
+        title = " Vigenere Cipher";
+        break;
+      case "/extended-vigenere":
+        title = " Extended Vigenere Cipher";
+        break;
+      case "/playfair":
+        title = " Playfair Cipher";
+        break;
+      case "/hill":
+        title = " Hill Cipher";
+        break;
+    }
+
+    document.title = title;
+  }, [location.pathname]);
   return (
     <>
-      <Stack w={"full"} minH={"100vh"} bg={"main"}>
-        <Flex w={"full"} bg={"navbar"} p={4}>
+      <Stack w={"full"} minH={"100vh"} bg={"#F4F4F4"}>
+        <Flex
+          w={"full"}
+          p={4}
+          bgGradient={"linear(to-b, #233140, #2C3E50, #344a60)"}
+        >
           <HStack gap={4}>
             <Icon
               as={RxHamburgerMenu}
@@ -78,6 +99,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               color={"white"}
               onClick={onOpen}
             />
+            <Image src="/logo.webp" boxSize={8} />
             <Heading color={"white"} fontSize={"x-large"}>
               {pages.find((item) => item.path === location.pathname)?.name}
             </Heading>
@@ -89,11 +111,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader>Bondung Cypher</DrawerHeader>
+          <DrawerHeader>
+            <HStack>
+              <Image src="/logo.webp" boxSize={8} />
+              <Heading size="md">Bondung Cipher</Heading>
+            </HStack>
+          </DrawerHeader>
           <DrawerBody>
             <Stack>
               {pages.map((page) => (
-                <Link to={page.path}>
+                <Link to={page.path} key={page.name}>
                   <HStack
                     p={2}
                     bg={page.active ? "navbar" : undefined}

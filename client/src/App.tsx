@@ -4,7 +4,6 @@ import Vigenere from "./pages/Vigenere";
 import ExtendedVigenere from "./pages/ExtendedVigenere";
 import Playfair from "./pages/Playfair";
 import Hill from "./pages/Hill";
-import SuperEncryption from "./pages/SuperEncryption";
 
 function App() {
   const router = createBrowserRouter([
@@ -27,10 +26,6 @@ function App() {
     {
       path: "/hill",
       element: <Hill />
-    },
-    {
-      path: "/super-encryption",
-      element: <SuperEncryption />
     }
   ]);
 
