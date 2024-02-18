@@ -4,7 +4,7 @@ class Api::Cipher::VigenereController < ApplicationController
       render json: { message: "Invalid mode" }, status: :unprocessable_entity
     end
 
-    text = params[:text]
+    text = extract_text_content
     key = params[:key]
 
     if params[:mode] == "encrypt"
@@ -47,6 +47,14 @@ class Api::Cipher::VigenereController < ApplicationController
     "z" => 25,
   }
 
+  def extract_text_content
+    if params[:file].present?
+      File.read(params[:file].tempfile)
+    else
+      params[:text]
+    end
+  end
+
   def encrypt(text, key)
     plaintext = text.delete(" ")
     ciphertext = ""
@@ -74,7 +82,7 @@ class Api::Cipher::VigenereController < ApplicationController
       ciphertext << cipher_char_ascii.chr
     end
 
-    return ciphertext
+    return ciphertext.upcase
   end
 
   def decrypt(text, key)
@@ -114,7 +122,7 @@ class Api::Cipher::VigenereController < ApplicationController
       plaintext << plain_char_ascii.chr
     end
 
-    return plaintext
+    return plaintext.upcase
   end
 
 end
