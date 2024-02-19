@@ -125,22 +125,85 @@ class Api::Cipher::ExtendedVigenereController < ApplicationController
       encrypted_bytes.append(encrypted_byte)
     end
 
+    if params[:se_enable] == "true"
+      k = params[:k_value].to_i
+      blocks = encrypted_bytes.each_slice(k).to_a
+
+      transposed_encrypted_bytes = []
+
+      num_cols = blocks.max_by(&:length).length
+
+      (0...num_cols).each do |col|
+        blocks.each do |block|
+          transposed_encrypted_bytes << block[col] if col < block.length
+        end
+      end
+      puts transposed_encrypted_bytes, "SE"
+
+      return transposed_encrypted_bytes
+    end
+
+    puts encrypted_bytes.inspect, "NORMAL"
+
     encrypted_bytes
   end
 
   def decrypt_text(text)
-    decrypted_bytes = []
-    key_length = @key_bytes.length
+    if params[:se_enable] == "true"
+      k = params[:k_value].to_i
+      total_length = text.length
+      num_blocks = total_length / k
+      remainder = total_length % k
 
-    (0..text.length - 1).each do |i|
-      encrypted_byte = text[i]
-      key_byte = @key_bytes[i % key_length]
+      if remainder > 0
+        (0..k-remainder-1).each do
+          text.push(-1)
+        end
+      end
 
-      decrypted_byte = (encrypted_byte - key_byte + 256) % 256
+      puts text.inspect, "TEXT"
 
-      decrypted_bytes.append(decrypted_byte)
+      transposed_encrypted_bytes_matrix = Matrix[*text.each_slice(remainder > 0 ? num_blocks + 1 : num_blocks).to_a]
+
+      puts transposed_encrypted_bytes_matrix.inspect, "MATRIX"
+
+      original_encrypted_bytes_matrix = transposed_encrypted_bytes_matrix.transpose
+
+      original_encrypted_bytes = original_encrypted_bytes_matrix.to_a.flatten.delete_if {|x| x == -1}
+
+      puts original_encrypted_bytes.inspect, "SE BEFORE"
+
+      decrypted_bytes = []
+      key_length = @key_bytes.length
+
+      (0..original_encrypted_bytes.length - 1).each do |i|
+        encrypted_byte = original_encrypted_bytes[i]
+        key_byte = @key_bytes[i % key_length]
+
+        decrypted_byte = (encrypted_byte - key_byte + 256) % 256
+
+        decrypted_bytes.append(decrypted_byte)
+      end
+
+      puts decrypted_bytes.inspect, "SE AFTER"
+
+      decrypted_bytes
+    else
+      decrypted_bytes = []
+      key_length = @key_bytes.length
+
+      (0..text.length - 1).each do |i|
+        encrypted_byte = text[i]
+        key_byte = @key_bytes[i % key_length]
+
+        decrypted_byte = (encrypted_byte - key_byte + 256) % 256
+
+        decrypted_bytes.append(decrypted_byte)
+      end
+
+      puts decrypted_bytes, "NORMAL"
+
+      decrypted_bytes
     end
-
-    decrypted_bytes
   end
 end

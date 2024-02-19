@@ -9,7 +9,13 @@ import {
   Heading,
   Icon,
   Input,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
   Stack,
+  Switch,
   Text,
   Textarea,
   useToast
@@ -30,6 +36,8 @@ export default function ExtendedVigenere() {
   const [isLoading, setIsLoading] = useState(false);
   const [plainTextFile, setPlainTextFile] = useState<File>();
   const [cipherTextFile, setCipherTextFile] = useState<File>();
+  const [enableSE, setEnableSE] = useState(false);
+  const [kValue, setKValue] = useState(5);
 
   const executeEncrypt = async () => {
     setIsLoading(true);
@@ -38,6 +46,8 @@ export default function ExtendedVigenere() {
         const data = new FormData();
         data.append("mode", "encrypt");
         data.append("key", key);
+        data.append("se_enable", enableSE ? "true" : "false");
+        data.append("k_value", kValue.toString());
         data.append("file", plainTextFile, plainTextFile.name);
 
         const response = await axios.post(
@@ -78,7 +88,9 @@ export default function ExtendedVigenere() {
           {
             mode: "encrypt",
             key: key,
-            text: plainText
+            text: plainText,
+            se_enable: enableSE ? "true" : "false",
+            k_value: kValue.toString()
           }
         );
         setResult(response.data.result);
@@ -104,6 +116,8 @@ export default function ExtendedVigenere() {
         const data = new FormData();
         data.append("mode", "decrypt");
         data.append("key", key);
+        data.append("se_enable", enableSE ? "true" : "false");
+        data.append("k_value", kValue.toString());
         data.append("file", cipherTextFile, cipherTextFile.name);
 
         const response = await axios.post(
@@ -144,7 +158,9 @@ export default function ExtendedVigenere() {
           {
             mode: "decrypt",
             key: key,
-            text: cipherText
+            text: cipherText,
+            se_enable: enableSE ? "true" : "false",
+            k_value: kValue.toString()
           }
         );
         setResult(response.data.result);
@@ -206,6 +222,34 @@ export default function ExtendedVigenere() {
               placeholder="Insert cipher key here"
             />
           </FormControl>
+          <FormControl display={"flex"} alignItems={"center"}>
+            <FormLabel htmlFor="super-encryption" mb={0}>
+              Enable super encryption?
+            </FormLabel>
+            <Switch
+              id="super-encryption"
+              size={"lg"}
+              colorScheme="green"
+              checked={enableSE}
+              onChange={() => setEnableSE(!enableSE)}
+            />
+          </FormControl>
+          {enableSE && (
+            <FormControl>
+              <FormLabel>Super encryption K</FormLabel>
+              <NumberInput
+                defaultValue={5}
+                min={0}
+                onChange={(value) => setKValue(parseInt(value))}
+              >
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+            </FormControl>
+          )}
         </Stack>
         <Stack w={"full"} spacing={3}>
           <HStack w={"full"} spacing={10}>

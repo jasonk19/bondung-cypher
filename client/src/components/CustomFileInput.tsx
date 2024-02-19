@@ -1,5 +1,5 @@
 import React, { BaseSyntheticEvent, useRef, useState } from "react";
-import { Button, Input, HStack, Icon } from "@chakra-ui/react";
+import { Button, Input, HStack, Icon, Text } from "@chakra-ui/react";
 import { MdFileUpload } from "react-icons/md";
 
 type Props = {
@@ -44,7 +44,9 @@ const CustomFileInput: React.FC<Props> = ({ onFileChange }) => {
         _hover={{ cursor: "pointer", bg: "#485C75" }}
       >
         {!fileState?.name && <Icon as={MdFileUpload} boxSize={6} />}
-        {fileState?.name || "Upload file"}
+        <Text isTruncated noOfLines={1}>
+          {fileState?.name || "Upload file"}
+        </Text>
       </Button>
       {fileState && <Button onClick={handleClear}>Clear</Button>}
     </HStack>
