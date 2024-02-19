@@ -6,9 +6,15 @@ class Api::Cipher::VigenereController < ApplicationController
 
     text = extract_text_content
     key = params[:key]
+    variation = params[:variation]
 
     if params[:mode] == "encrypt"
-      encrypted_text = encrypt(text, key)
+      if variation == "standard"
+        encrypted_text = standard_encrypt(text, key)
+      elsif variation == "autokey"
+        encrypted_text = autokey_encrypt(text, key)
+      end
+
       render json: { result: encrypted_text }, status: :ok
     elsif params[:mode] == "decrypt"
       decrypted_text = decrypt(text, key)
@@ -55,7 +61,7 @@ class Api::Cipher::VigenereController < ApplicationController
     end
   end
 
-  def encrypt(text, key)
+  def standard_encrypt(text, key)
     plaintext = text.delete(" ")
     ciphertext = ""
     key_position = 0
@@ -76,6 +82,38 @@ class Api::Cipher::VigenereController < ApplicationController
       end
 
       if key_position >= key.size
+        key_position = 0
+      end
+
+      ciphertext << cipher_char_ascii.chr
+    end
+
+    return ciphertext.upcase
+  end
+
+  def autokey_encrypt(text, key)
+    plaintext = text.delete(" ")
+    ciphertext = ""
+    new_key = key + plaintext
+    new_key = new_key[0, plaintext.size]
+    key_position = 0
+
+    plaintext.each_char.with_index do |c, i|
+      plain_char_ascii = c.ord
+
+      if "A".ord <= plain_char_ascii and plain_char_ascii <= "Z".ord
+        cipher_char_ascii = (plain_char_ascii - "A".ord + ALPHABETS[new_key[key_position].downcase]) % 26
+        cipher_char_ascii = cipher_char_ascii + "A".ord
+        key_position += 1
+      elsif "a".ord <= plain_char_ascii and plain_char_ascii <= "z".ord
+        cipher_char_ascii = (plain_char_ascii - "a".ord + ALPHABETS[new_key[key_position].downcase]) % 26
+        cipher_char_ascii = cipher_char_ascii + "a".ord
+        key_position += 1
+      else
+        cipher_char_ascii = plain_char_ascii
+      end
+
+      if key_position >= new_key.size
         key_position = 0
       end
 
