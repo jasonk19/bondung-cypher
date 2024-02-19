@@ -138,12 +138,9 @@ class Api::Cipher::ExtendedVigenereController < ApplicationController
           transposed_encrypted_bytes << block[col] if col < block.length
         end
       end
-      puts transposed_encrypted_bytes, "SE"
 
       return transposed_encrypted_bytes
     end
-
-    puts encrypted_bytes.inspect, "NORMAL"
 
     encrypted_bytes
   end
@@ -152,26 +149,33 @@ class Api::Cipher::ExtendedVigenereController < ApplicationController
     if params[:se_enable] == "true"
       k = params[:k_value].to_i
       total_length = text.length
-      num_blocks = total_length / k
+      elements_per_row = total_length / k
       remainder = total_length % k
 
-      if remainder > 0
-        (0..k-remainder-1).each do
-          text.push(-1)
-        end
+      split_array = []
+      start_index = 0
+
+      k.times do |i|
+        end_index = if i < remainder
+                      start_index + elements_per_row + 1
+                    else
+                      start_index + elements_per_row
+                    end
+
+        split_array << text[start_index...end_index]
+        start_index = end_index
       end
 
-      puts text.inspect, "TEXT"
+      original_encrypted_bytes = []
 
-      transposed_encrypted_bytes_matrix = Matrix[*text.each_slice(remainder > 0 ? num_blocks + 1 : num_blocks).to_a]
-
-      puts transposed_encrypted_bytes_matrix.inspect, "MATRIX"
-
-      original_encrypted_bytes_matrix = transposed_encrypted_bytes_matrix.transpose
-
-      original_encrypted_bytes = original_encrypted_bytes_matrix.to_a.flatten.delete_if {|x| x == -1}
-
-      puts original_encrypted_bytes.inspect, "SE BEFORE"
+      split_col = split_array.max_by(&:length).length
+      (0...split_col).each do |col_idx|
+        split_array.each do |row|
+          if col_idx < row.length
+            original_encrypted_bytes << row[col_idx]
+          end
+        end
+      end
 
       decrypted_bytes = []
       key_length = @key_bytes.length
@@ -184,8 +188,6 @@ class Api::Cipher::ExtendedVigenereController < ApplicationController
 
         decrypted_bytes.append(decrypted_byte)
       end
-
-      puts decrypted_bytes.inspect, "SE AFTER"
 
       decrypted_bytes
     else
@@ -200,8 +202,6 @@ class Api::Cipher::ExtendedVigenereController < ApplicationController
 
         decrypted_bytes.append(decrypted_byte)
       end
-
-      puts decrypted_bytes, "NORMAL"
 
       decrypted_bytes
     end
