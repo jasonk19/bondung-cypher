@@ -69,7 +69,7 @@ class Api::Cipher::AffineController < ApplicationController
         cipher_char_ascii -= "A".ord
         cipher_char_ascii = inverse_slope * (cipher_char_ascii - intercept)
         if cipher_char_ascii < 0
-          cipher_char_ascii = (26 * ((cipher_char_ascii * -1) / 26).ceil) + cipher_char_ascii
+          cipher_char_ascii = (26 * ((cipher_char_ascii * -1).fdiv(26)).ceil) + cipher_char_ascii
         end
         plain_char_ascii = cipher_char_ascii % 26
         plain_char_ascii += "A".ord
@@ -77,7 +77,7 @@ class Api::Cipher::AffineController < ApplicationController
         cipher_char_ascii -= "a".ord
         cipher_char_ascii = inverse_slope * (cipher_char_ascii - intercept)
         if cipher_char_ascii < 0
-          cipher_char_ascii = (26 * ((cipher_char_ascii * -1) / 26).ceil) + cipher_char_ascii
+          cipher_char_ascii = (26 * ((cipher_char_ascii * -1).fdiv(26)).ceil) + cipher_char_ascii
         end
         plain_char_ascii = cipher_char_ascii % 26
         plain_char_ascii += "a".ord
