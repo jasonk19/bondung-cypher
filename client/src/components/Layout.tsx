@@ -101,7 +101,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             />
             <Image src="/logo.webp" boxSize={8} />
             <Heading color={"white"} fontSize={"x-large"}>
-              {pages.find((item) => item.path === location.pathname)?.name}
+              {pages.find((item) => item.path === location.pathname)?.name ||
+                "Bondung Cipher"}
             </Heading>
           </HStack>
         </Flex>
@@ -112,10 +113,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <DrawerContent>
           <DrawerCloseButton />
           <DrawerHeader>
-            <HStack>
-              <Image src="/logo.webp" boxSize={8} />
-              <Heading size="md">Bondung Cipher</Heading>
-            </HStack>
+            <Link to="/">
+              <HStack>
+                <Image src="/logo.webp" boxSize={8} />
+                <Heading size="md">Bondung Cipher</Heading>
+              </HStack>
+            </Link>
           </DrawerHeader>
           <DrawerBody>
             <Stack>

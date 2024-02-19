@@ -1,4 +1,5 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import Home from "./pages/Home";
 import Affine from "./pages/Affine";
 import Vigenere from "./pages/Vigenere";
 import ExtendedVigenere from "./pages/ExtendedVigenere";
@@ -7,6 +8,10 @@ import Hill from "./pages/Hill";
 
 function App() {
   const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Home />
+    },
     {
       path: "/affine",
       element: <Affine />
