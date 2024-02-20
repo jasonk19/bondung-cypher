@@ -14,13 +14,53 @@ import {
   Text,
   useToast,
   IconButton,
+  Grid,
+  GridItem,
 } from "@chakra-ui/react";
 import Layout from "../components/Layout";
 import CustomFileInput from "../components/CustomFileInput";
 import { FaLock, FaMinus, FaPlus } from "react-icons/fa";
 import { MdFileDownload } from "react-icons/md";
-import { useState } from "react";
+import { BaseSyntheticEvent, useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
+
+const MatrixInput = ({matrix, handleMatrixChange}: {
+  matrix: number[][];
+  handleMatrixChange: (event: BaseSyntheticEvent, row: number, col: number) => void;
+}) => {
+  return (
+    <FormControl>
+      <FormLabel>Matrix</FormLabel>
+      <Grid
+        templateColumns={`repeat(${matrix.length}, 1fr)`}
+        templateRows={`repeat(${matrix.length}, 1fr)`}
+        gap={2}
+        w={"fit-content"}
+        placeSelf={"center"}
+      >
+        {matrix.map((row, rowIndex) => 
+          row.map((item, colIndex) => (
+            <GridItem width={"40px"} height={"40px"}>
+              <Input
+                key={`${rowIndex}-${colIndex}`}
+                value={item}
+                maxLength={1}
+                border={"1px solid black"}
+                textAlign={"center"}
+                fontSize={"1em"}
+                padding={0}
+                type="number"
+                onChange={(event) =>
+                  handleMatrixChange(event, rowIndex, colIndex)
+                }
+              />
+            </GridItem>
+          ))
+        )}
+      </Grid>
+    </FormControl>
+  )
+}
 
 export default function Hill() {
   const toast = useToast()
@@ -28,31 +68,46 @@ export default function Hill() {
   const [plainText, setPlainText] = useState("")
   const [cipherText, setCipherText] = useState("")
   const [matrixSize, setMatrixSize] = useState(3)
-  const [matrix, setMatrix] = useState()
+  const [matrix, setMatrix] = useState<number[][]>(
+    Array(matrixSize)
+    .fill([])
+    .map(() => Array(matrixSize).fill(""))
+  )
   const [result, setResult] = useState("")
   const [isLoading, setIsLoading] = useState(false);
   const [plainTextFile, setPlainTextFile] = useState<File>();
   const [cipherTextFile, setCipherTextFile] = useState<File>();
+
+  useEffect(() => {
+    setMatrix(
+      Array(matrixSize)
+      .fill([])
+      .map(() => Array(matrixSize).fill(""))
+    )
+  }, [matrixSize])
 
   const executeEncrypt = async () => {
     try {
       if (plainTextFile !== undefined) {
         const data = new FormData();
         data.append("mode", "encrypt");
+        data.append("text", plainText)
+        data.append("matrix", JSON.stringify(matrix))
         data.append("file", plainTextFile, plainTextFile.name);
 
         const response = await axios.post(
-          "http://localhost:3000/api/cipher/vigenere",
+          "http://localhost:3000/api/cipher/hill",
           data
         );
         setResult(response.data.result);
         setIsLoading(false);
       } else {
         const response = await axios.post(
-          "http://localhost:3000/api/cipher/vigenere",
+          "http://localhost:3000/api/cipher/hill",
           {
             mode: "encrypt",
-            text: plainText
+            text: plainText,
+            matrix
           }
         );
         setResult(response.data.result);
@@ -77,20 +132,23 @@ export default function Hill() {
       if (cipherTextFile !== undefined) {
         const data = new FormData();
         data.append("mode", "decrypt");
+        data.append("text", cipherText)
+        data.append("matrix", JSON.stringify(matrix))
         data.append("file", cipherTextFile, cipherTextFile.name);
 
         const response = await axios.post(
-          "http://localhost:3000/api/cipher/vigenere",
+          "http://localhost:3000/api/cipher/hill",
           data
         );
         setResult(response.data.result);
         setIsLoading(false);
       } else {
         const response = await axios.post(
-          "http://localhost:3000/api/cipher/vigenere",
+          "http://localhost:3000/api/cipher/hill",
           {
             mode: "decrypt",
-            text: cipherText
+            text: cipherText,
+            matrix
           }
         );
         setResult(response.data.result);
@@ -140,11 +198,30 @@ export default function Hill() {
     }
   }
 
+  const handleMatrixChange = (
+    event: BaseSyntheticEvent,
+    row: number,
+    col: number
+  ) => {
+    const newMatrix = matrix.map((rowArr, rowIndex) =>
+      rowArr.map((item, colIndex) => {
+        if (rowIndex === row && colIndex === col) {
+          return Number(event.target.value)
+        }
+        return item;
+      })
+    );
+
+    setMatrix(newMatrix);
+  };
+
+  console.log(matrix)
+
   return (
     <Layout>
       <HStack py={8} px={32} justifyContent={"space-around"} align={"start"} gap="8">
         <Stack spacing={3} width={"50%"}>
-          <Heading color="navbar" size="md">Vigen&eacute;re Cipher</Heading>
+          <Heading color="navbar" size="md">Hill Cipher</Heading>
           <Divider border={"1px solid black"} />
           <Stack>
             <FormControl>
@@ -155,6 +232,7 @@ export default function Hill() {
                 <IconButton icon={<FaMinus />} aria-label="Decrement" onClick={handleDecrementMatrixSize} />
               </HStack>
             </FormControl>
+            <MatrixInput matrix={matrix} handleMatrixChange={handleMatrixChange} />
           </Stack>
         </Stack>
         <Stack width={"full"} spacing={3}>

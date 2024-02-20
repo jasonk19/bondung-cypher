@@ -13,21 +13,30 @@ import {
   Textarea,
   Text,
   useToast,
+  IconButton,
 } from "@chakra-ui/react";
 import Layout from "../components/Layout";
 import CustomFileInput from "../components/CustomFileInput";
-import { FaLock } from "react-icons/fa";
+import { FaLock, FaMinus, FaPlus } from "react-icons/fa";
 import { MdFileDownload } from "react-icons/md";
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
+
+const gcd = (a: number, b: number): number => {
+  if (!b) {
+    return a;
+  }
+
+  return gcd(b, a % b);
+}
 
 export default function Affine() {
   const toast = useToast()
 
   const [plainText, setPlainText] = useState("")
   const [cipherText, setCipherText] = useState("")
-  const [slope, setSlope] = useState(0)
-  const [intercept, setIntercept] = useState(0)
+  const [slope, setSlope] = useState(5)
+  const [intercept, setIntercept] = useState(8)
   const [result, setResult] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [plainTextFile, setPlainTextFile] = useState<File>();
@@ -137,6 +146,36 @@ export default function Affine() {
     setCipherTextFile(file);
   };
 
+  const handleIncrementSlope = () => {
+    let initialSlope = slope + 1
+    while (gcd(initialSlope, 26) !== 1) {
+      initialSlope += 1
+    }
+
+    setSlope(initialSlope)
+  }
+
+  const handleDecremenetSlope = () => {
+    if (slope > 1) {
+      let initialSlope = slope - 1
+      while (gcd(initialSlope, 26) !== 1) {
+        initialSlope -= 1
+      }
+  
+      setSlope(initialSlope)
+    }
+  }
+
+  const handleIncrementIntercept = () => {
+    setIntercept((prev) => prev + 1)
+  }
+
+  const handleDecrementIntercept = () => {
+    if (intercept > 1) {
+      setIntercept((prev) => prev - 1)
+    }
+  }
+
   return (
     <Layout>
       <HStack py={8} px={32} justifyContent={"space-around"} align={"start"} gap="8">
@@ -146,11 +185,19 @@ export default function Affine() {
           <Stack>
             <FormControl>
               <FormLabel>Slope</FormLabel>
-              <Input placeholder="slope" onChange={(e) => setSlope(Number(e.target.value))} type="number" />
+              <HStack>
+                <Input placeholder="slope" value={slope} onChange={(e) => setSlope(Number(e.target.value))} type="number" />
+                <IconButton icon={<FaPlus />} aria-label="Increment" onClick={handleIncrementSlope} />
+                <IconButton icon={<FaMinus />} aria-label="Decrement" onClick={handleDecremenetSlope} />
+              </HStack>
             </FormControl>
             <FormControl>
               <FormLabel>Intercept</FormLabel>
-              <Input placeholder="intercept" onChange={(e) => setIntercept(Number(e.target.value))} type="number" />
+              <HStack>
+                <Input placeholder="intercept" value={intercept} onChange={(e) => setIntercept(Number(e.target.value))} type="number" />
+                <IconButton icon={<FaPlus />} aria-label="Increment" onClick={handleIncrementIntercept} />
+                <IconButton icon={<FaMinus />} aria-label="Decrement" onClick={handleDecrementIntercept} />
+              </HStack>
             </FormControl>
           </Stack>
         </Stack>

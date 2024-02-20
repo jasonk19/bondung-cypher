@@ -7,7 +7,7 @@ class Api::Cipher::HillController < ApplicationController
     end
 
     matrix = create_matrix
-    text = params[:text]
+    text = extract_text_content
 
     if !is_matrix_inversible(matrix)
       render json: { message: "Matrix is not inversible" }, status: :bad_request
@@ -82,13 +82,16 @@ class Api::Cipher::HillController < ApplicationController
     25 => "z"
   }
 
+  def extract_text_content
+    if params[:file].present?
+      File.read(params[:file].tempfile)
+    else
+      params[:text]
+    end
+  end
 
   def create_matrix
-    matrix_params = if params[:file].present?
-      JSON.parse(params[:matrix])
-    else
-      params[:matrix]
-    end
+    matrix_params = params[:matrix]
 
     return Matrix[*matrix_params]
   end
