@@ -186,7 +186,7 @@ export default function Affine() {
             <FormControl>
               <FormLabel>Slope</FormLabel>
               <HStack>
-                <Input placeholder="slope" value={slope} onChange={(e) => setSlope(Number(e.target.value))} type="number" />
+                <Input placeholder="Slope" value={slope} onChange={(e) => setSlope(Number(e.target.value))} type="number" />
                 <IconButton icon={<FaPlus />} aria-label="Increment" onClick={handleIncrementSlope} />
                 <IconButton icon={<FaMinus />} aria-label="Decrement" onClick={handleDecremenetSlope} />
               </HStack>
@@ -194,7 +194,7 @@ export default function Affine() {
             <FormControl>
               <FormLabel>Intercept</FormLabel>
               <HStack>
-                <Input placeholder="intercept" value={intercept} onChange={(e) => setIntercept(Number(e.target.value))} type="number" />
+                <Input placeholder="Intercept" value={intercept} onChange={(e) => setIntercept(Number(e.target.value))} type="number" />
                 <IconButton icon={<FaPlus />} aria-label="Increment" onClick={handleIncrementIntercept} />
                 <IconButton icon={<FaMinus />} aria-label="Decrement" onClick={handleDecrementIntercept} />
               </HStack>
@@ -283,7 +283,6 @@ export default function Affine() {
                 </HStack>
               </Button>
             </HStack>
-            <Text>Result</Text>
             {result.length > 0 ? (
               <Text>{result}</Text>
             ) : (
