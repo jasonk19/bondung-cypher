@@ -13,6 +13,10 @@ class Api::Cipher::HillController < ApplicationController
       render json: { message: "Matrix is not inversible" }, status: :bad_request
     end
 
+    if text.size % matrix.row_count != 0
+      text += "X" * (text.size % matrix.row_count)
+    end
+
     if params[:mode] == "encrypt"
       encrypted_text = encrypt(text, matrix)
       render json: { result: encrypted_text }, status: :ok
@@ -91,7 +95,11 @@ class Api::Cipher::HillController < ApplicationController
   end
 
   def create_matrix
-    matrix_params = params[:matrix]
+    matrix_params = if params[:file].present?
+      JSON.parse(params[:matrix])
+    else
+      params[:matrix]
+    end
 
     return Matrix[*matrix_params]
   end
@@ -106,6 +114,7 @@ class Api::Cipher::HillController < ApplicationController
   end
 
   def encrypt(text, matrix)
+    text = text.delete(" ")
     substring_count = matrix.row_count
     position = 0
     ciphertext = ""
@@ -162,6 +171,8 @@ class Api::Cipher::HillController < ApplicationController
   end
 
   def decrypt(text, matrix)
+    text = text.delete(" ")
+
     inverse_matrix = find_inverse_matrix(matrix)
 
     substring_count = inverse_matrix.row_count

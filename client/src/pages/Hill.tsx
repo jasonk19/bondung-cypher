@@ -91,7 +91,6 @@ export default function Hill() {
       if (plainTextFile !== undefined) {
         const data = new FormData();
         data.append("mode", "encrypt");
-        data.append("text", plainText)
         data.append("matrix", JSON.stringify(matrix))
         data.append("file", plainTextFile, plainTextFile.name);
 
@@ -132,7 +131,6 @@ export default function Hill() {
       if (cipherTextFile !== undefined) {
         const data = new FormData();
         data.append("mode", "decrypt");
-        data.append("text", cipherText)
         data.append("matrix", JSON.stringify(matrix))
         data.append("file", cipherTextFile, cipherTextFile.name);
 
