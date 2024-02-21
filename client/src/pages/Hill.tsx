@@ -317,7 +317,6 @@ export default function Hill() {
                 </HStack>
               </Button>
             </HStack>
-            <Text>Result</Text>
             {result.length > 0 ? (
               <Text>{result}</Text>
             ) : (

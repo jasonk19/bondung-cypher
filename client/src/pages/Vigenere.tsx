@@ -159,7 +159,7 @@ export default function Vigenere() {
             </FormControl>
             <FormControl>
               <FormLabel>Key</FormLabel>
-              <Input placeholder="key" onChange={(e) => setKey(e.target.value)} />
+              <Input placeholder="Insert cipher key here" onChange={(e) => setKey(e.target.value)} />
             </FormControl>
           </Stack>
         </Stack>
@@ -245,7 +245,6 @@ export default function Vigenere() {
                 </HStack>
               </Button>
             </HStack>
-            <Text>Result</Text>
             {result.length > 0 ? (
               <Text>{result}</Text>
             ) : (
