@@ -4,9 +4,9 @@ class Api::Cipher::AffineController < ApplicationController
       render json: { message: "Invalid mode" }, status: :unprocessable_entity
     end
 
-    text = params[:text]
-    slope = params[:slope]
-    intercept = params[:intercept]
+    text = extract_text_content
+    slope = params[:slope].to_i
+    intercept = params[:intercept].to_i
 
     if slope.gcd(26) != 1
       render json: { message: "Slope is not relatively prime to the total number of alphabets" }, status: :bad_request
@@ -22,6 +22,14 @@ class Api::Cipher::AffineController < ApplicationController
   end
 
   private
+
+  def extract_text_content
+    if params[:file].present?
+      File.read(params[:file].tempfile)
+    else
+      params[:text]
+    end
+  end
 
   def encrypt(text, slope, intercept)
     plaintext = text.delete(" ")
