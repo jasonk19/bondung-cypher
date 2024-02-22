@@ -10,6 +10,7 @@ class Api::Cipher::AffineController < ApplicationController
 
     if slope.gcd(26) != 1
       render json: { message: "Slope is not relatively prime to the total number of alphabets" }, status: :bad_request
+      return
     end
 
     if params[:mode] == "encrypt"

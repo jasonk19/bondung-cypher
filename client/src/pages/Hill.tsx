@@ -213,8 +213,6 @@ export default function Hill() {
     setMatrix(newMatrix);
   };
 
-  console.log(matrix)
-
   return (
     <Layout>
       <HStack py={8} px={32} justifyContent={"space-around"} align={"start"} gap="8">

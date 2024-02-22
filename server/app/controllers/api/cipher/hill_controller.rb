@@ -11,6 +11,7 @@ class Api::Cipher::HillController < ApplicationController
 
     if !is_matrix_inversible(matrix)
       render json: { message: "Matrix is not inversible" }, status: :bad_request
+      return
     end
 
     if text.size % matrix.row_count != 0
@@ -108,7 +109,7 @@ class Api::Cipher::HillController < ApplicationController
     begin
       inverse = matrix.inverse
       return true
-    rescue Matrix::ErrDimensionSingular
+    rescue ExceptionForMatrix::ErrNotRegular
       return false
     end
   end
